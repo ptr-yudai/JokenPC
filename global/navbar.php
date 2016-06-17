@@ -1,5 +1,5 @@
 
-<div class="navbar navbar-default navbar-inverse">
+<div class="navbar navbar-default">
     <div class="container-fluid">
 	<div class="navbar-header"><a class="navbar-brand" href="/">JPC</a></div>
 	<div class="collapse navbar-collapse">
