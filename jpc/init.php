@@ -1,5 +1,6 @@
 <?php
 ini_set('display_errors', 1);
+session_start();
 require(dirname(__FILE__).'/config.php');
 require(dirname(__FILE__).'/auth.php');
 
@@ -12,6 +13,31 @@ class JPC
     {
 	$this->log_level[] = $level;
 	$this->log_message[] = $message;
+    }
+    
+    /*
+     * ログ取り出し
+     */
+    function poplog($level)
+    {
+	$ret = "";
+	foreach($this->log_level as $key => $value) {
+	    if ($value === $level) {
+		$ret = $this->log_message[$key];
+		unset($this->log_level[$key]);
+		unset($this->log_message[$key]);
+		break;
+	    }
+	}
+	return $ret;
+    }
+    
+    /*
+       エスケープ
+     */
+    function h($str)
+    {
+	return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
     }
     
     /*

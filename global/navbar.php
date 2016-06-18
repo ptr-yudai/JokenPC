@@ -17,7 +17,11 @@
 						  : "<li>"); ?><a href="/status/">解答状況</a></li>
 	    </ul>
 	    <p class="navbar-text navbar-right">
-		<a href="#" class="navbar-link">ほげ</a> 
+		<?php if ($jpc->auth->is_logged_in()) { ?>
+		    <a href="#" class="navbar-link">ほげ</a> 
+		<?php } else { ?>
+		    <a href="/login/" class="navbar-link">ログイン</a>
+		<?php } ?>
 	    </p>
 	</div>
     </div>
