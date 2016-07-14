@@ -23,7 +23,7 @@
 			    <span class="caret"></span>
 			</button>
 			<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownAboutMe">
-			    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">個人設定</a></li>
+			    <li role="presentation"><a role="menuitem" tabindex="-1" href="/user/">個人設定</a></li>
 			    <li role="presentation" class="divider"></li>
 			    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">ログアウト</a></li>
 			</ul>
