@@ -1,6 +1,10 @@
 <?php 
 require(dirname(__FILE__).'/../jpc/init.php');
 $jpc = new JPC();
+/* ログイン済み */
+if ($jpc->auth->is_logged_in() === false) {
+    header("Location: /login/");
+}
 /* ページ設定 */
 $jpc->title = "問題一覧 - JPC";
 $jpc->navbar_active = 2;

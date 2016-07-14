@@ -6,7 +6,7 @@ $jpc->auth->login();
 $jpc->auth->signup();
 /* ログイン済み */
 if ($jpc->auth->is_logged_in()) {
-    //header("");
+    header("Location: /problem/");
 }
 /* ページ設定 */
 $jpc->title = "ログイン - JPC";
@@ -35,6 +35,14 @@ $jpc->navbar_active = 0;
 		<div class="alert alert-danger fade in">
 		    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 		    <strong>エラー： </strong>
+		    <p><?php print($jpc->h($error)); ?></p>
+		</div>
+	    <?php } ?>
+	    <!-- Error : 成功 -->
+	    <?php if (($error = $jpc->poplog('success')) !== "") { ?>
+		<div class="alert alert-info fade in">
+		    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+		    <strong>情報： </strong>
 		    <p><?php print($jpc->h($error)); ?></p>
 		</div>
 	    <?php } ?>

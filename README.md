@@ -64,7 +64,7 @@ CREATE TABLE problem(
     category CHAR(64) NOT NULL,
     solved INT NOT NULL,
     solved_user TEXT NOT NULL,
-    last_date DATETIME.
+    last_date DATETIME,
     PRIMARY KEY (id)
 );
 ```

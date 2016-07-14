@@ -20,8 +20,12 @@ class JPC_Auth
 	
 	// ユーザー名とパスワードを検索する
 	$statement = $this->jpc->pdo->prepare('SELECT id FROM account WHERE user=:user AND pass=:pass;');
-	$statement->bindParam(':user', $_POST['username'], PDO::PARAM_STR);
-	$statement->bindParam(':pass', md5($_POST['password']), PDO::PARAM_STR);
+	$statement->bindParam(':user',
+			      $_POST['username'],
+			      PDO::PARAM_STR);
+	$statement->bindParam(':pass',
+			      md5($this->jpc->config->salt . $_POST['password']),
+			      PDO::PARAM_STR);
 	$statement->execute();
 	
 	// ユーザーが見つかったか
@@ -89,18 +93,25 @@ class JPC_Auth
 
 	// パスワードが正しいかを確認
 	if ($_POST['password'] !== $_POST['password_confirm']) {
-	    $this->jpc->log('cation', "パスワードが一致していません。", false);
+	    $this->jpc->log('cation', "確認用パスワードが一致していません。", false);
 	    return;
 	}
 	
 	// アカウントに登録する
-	$statement = $this->pdo->prepare('INSERT INTO account(user, pass, score, solved) VALUES(:user, :pass, 0, "");');
-	$statement->bindParam(':user', $_POST['username'], PDO::PARAM_STR);
-	$statement->bindParam(':pass', md5($_POST['password']), PDO::PARAM_STR);
+	$statement = $this->jpc->pdo->prepare('INSERT INTO account(user, team, pass, mime, score, solved) VALUES(:user, :team, :pass, 0, 0, "");');
+	$statement->bindParam(':user',
+			      $_POST['username'],
+			      PDO::PARAM_STR);
+	$statement->bindValue(':team',
+			      $_POST['username'],
+			      PDO::PARAM_STR);
+	$statement->bindParam(':pass',
+			      md5($this->jpc->config->salt . $_POST['password']),
+			      PDO::PARAM_STR);
 	$statement->execute();
 	
 	// 成功
-	$this->fatal_error('signup', "登録が完了しました。ログインしてください。", true);
+	$this->jpc->log('success', "登録が完了しました。ログインしてください。", true);
     }
 
     /*
@@ -112,6 +123,18 @@ class JPC_Auth
 	    || empty($_SESSION['username'])) return false;
 	if ($_SESSION['login'] !== true) return false;
 	return true;
+    }
+
+    /*
+     * 指定したユーザーが存在するかを確認する
+     */
+    function user_exist($username)
+    {
+	$statement = $this->jpc->pdo->prepare('SELECT id FROM account WHERE user=:user;');
+	$statement->bindParam(':user', $username, PDO::PARAM_STR);
+	$statement->execute();
+	if ($statement->rowCount() > 0) return true;
+	return false;
     }
 
     /*

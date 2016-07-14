@@ -10,6 +10,8 @@ class JPC_Config
 	/*
 	 * プロコンの設定
 	 */
+	// チーム戦
+	$this->has_team = false;                         // true:チーム戦
 	// 開催場所(時刻)
 	$this->place = 'Asia/Tokyo';                     // タイムゾーン
 	date_default_timezone_set($this->place);      // ここは変更しない
@@ -28,6 +30,7 @@ class JPC_Config
 	$this->db_name = 'joken_procon';       // データベース名
 	$this->db_username = 'pc_master';      // アクセスするユーザー名
 	$this->db_password = 'debug_password'; // ユーザーのパスワード
+	$this->salt = 'debug_salt';            // パスワードハッシュのソルト
     }
 
     function __construct()
