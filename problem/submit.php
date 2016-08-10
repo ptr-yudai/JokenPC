@@ -1,4 +1,4 @@
-<?php 
+<?php
 require(dirname(__FILE__).'/../jpc/init.php');
 $jpc = new JPC();
 /* 問題番号から詳細を取得 */
@@ -26,6 +26,12 @@ $jpc->navbar_active = 2;
     <body>
 	<?php require(dirname(__FILE__).'/../global/navbar.php'); ?>
 	<div class="container-fluid">
+	    <!-- Errpr : 成功 -->
+	    <div class="alert alert-success fade in" id="complete" style="display: none;">
+		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+		<strong>完了： </strong>
+		<p>おめでとうございます！<?php print((string)$jpc->prob->info['score']."[pt]"); ?>を獲得しました。</p>
+	    </div>
 	    <!-- Errpr : 警告 -->
 	    <div class="alert alert-danger fade in" id="error" style="display: none;">
 		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -37,7 +43,19 @@ $jpc->navbar_active = 2;
 	    <div class="panel panel-default">
 		<div class="panel-heading">実行</div>
 		<div class="panel-body">
-		    <p>プログラムをチェックしています。</p>
+		    <p>以下に各入力に対する出力の正誤が表示されます。</p>
+		    <table class="table table-bordered">
+			<tr>
+			    <?php for($i = 1; $i <= (int)$jpc->prob->info['exec_time']; $i++) { ?>
+				<th>入力<?php print($i); ?></th>
+			    <?php } ?>
+			</tr>
+			<tr>
+			    <?php for($i = 1; $i <= (int)$jpc->prob->info['exec_time']; $i++) { ?>
+				<td><span id="<?php print("icon".(string)$i); ?>" style="font-size: 24px;"></span></td>
+			    <?php } ?>
+			</tr>
+		    </table>
 		</div>
 	    </div>
 

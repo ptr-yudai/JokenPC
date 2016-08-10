@@ -38,14 +38,26 @@ $(function() {
 	var info = JSON.parse(e.data);
 	if ('attempt' in info) {
 	    switch(info['attempt']) {
+
 	    case -1: // こちらのデータが間違っていた
 		$('#error').prop("style", "display: block;");
 		$('#error-message').html("不正なデータを要求しました。");
 		break;
 
-	    default: // ステージを突破
+	    default: // プログラム実行中
+		$("#icon" + info['attempt'].toString()).addClass("glyphicon glyphicon-hourglass");
 		break;
+		
 	    }
+	} else if ('complete' in info) {
+	    // 全て終了
+	    $('#complete').prop("style", "display: block;");
+	} else if ('success' in info) {
+	    // 入力に成功
+	    $("#icon" + info['success'].toString()).removeClass().addClass("glyphicon glyphicon-ok").css('color', 'green');
+	} else if ('failure' in info) {
+	    // 入力に失敗
+	    $("#icon" + info['failure'].toString()).removeClass().addClass("glyphicon glyphicon-remove").css('color', 'red');
 	} else if ('compile' in info) {
 	    // コンパイル結果を表示
 	    $('#compile').html(escapeHtml(info['compile']));

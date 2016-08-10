@@ -2,6 +2,7 @@
 
 #
 # このファイルはHTTP経由でアクセスできない別の場所に移動してください
+# また、root権限で実行される必要があります
 #
 
 import commands
@@ -46,9 +47,13 @@ def execute(ws, post, record):
     os.chdir('/tmp/')
 
     # ユーザーを作成する
-    #os.system("useradd -p `printf {1} | mkpasswd -s -m sha-512` {0}".format(username, password))
-    #pwnam = pwd.getpwnam(username)
-
+    try:
+        pass
+        #os.system("useradd {0}".format(username))
+        #pwnam = pwd.getpwnam(username)
+    except Exception:
+        return
+    
     # コードを生成
     fp = open(filepath_in, 'w')
     fp.write(code)
@@ -67,20 +72,54 @@ def execute(ws, post, record):
     except Exception:
         pass
 
+    # コンパイルできているか
+    if not os.path.exists(filepath_out):
+        print("...[INFO] コンパイルに失敗しました。")
+        return
+
     # 実行ファイルの権限を変更
     try:
-        os.chmod(filepath_out, 0500)
+        pass
+        #os.chmod(filepath_out, 0500)
+        #os.chown(filepath_out, pwnam.pw_uid, pwnam.pw_gid)
     except Exception:
+        try:
+            os.remove(filepath_out)
+            #os.system("userdel {0}".format(username))
+        except Exception:
+            print("...[WARNING] /tmp/{0}の削除に失敗しました。".format(filepath_out))
+            print("...[WARNING] ユーザー{0}の削除に失敗しました。".format(username))
+            pass
         return
 
     # チェックする
-    #for n in range(int(record['exec_time'])):
-        
+    clear = True
+    for n in range(int(record['exec_time'])):
+        # 実行開始を宣言
+        try:
+            ws.send(json.dumps({'attempt': n + 1}))
+        except Exception:
+            pass
+        # 入力を生成
+        #input_data = commands.getoutput()
+        # 実行結果を取得
+        # 実行結果を宣言
+        try:
+            ws.send(json.dumps({'success': n + 1}))
+        except Exception:
+            pass
+
+    # 成功通知
+    if clear:
+        ws.send('{"complete":""}')
 
     # 実行ファイルを削除
     try:
         os.remove(filepath_out)
+        #os.system("userdel {0}".format(username))
     except Exception:
+        print("...[WARNING] /tmp/{0}の削除に失敗しました。".format(filepath_out))
+        print("...[WARNING] ユーザー{0}の削除に失敗しました。".format(username))
         pass
     
     return
@@ -90,6 +129,10 @@ def execute(ws, post, record):
 def randstr(length):
     return ''.join([random.choice(string.ascii_letters + string.digits) for i in range(length)])
 
+
+#
+# ハンドル
+#
 def handler(env, response):
     global langlist
     global DB
@@ -118,7 +161,7 @@ def handler(env, response):
     # 問題を取得
     cursor = DB.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SELECT * FROM problem WHERE id={id};".format(id=packet['id']))
-    record = cursor.fetchall()
+    record = cursor.fetchall()[0]
     cursor.close()
     
     # 実行
@@ -141,7 +184,7 @@ def check_payload(packet):
     if 'extension' not in langlist : return False
     if packet['lang'] not in langlist['compile']   : return False
     if packet['lang'] not in langlist['extension'] : return False
-    # データに誤りがある
+    # データが正しい
     return True
 
 #
