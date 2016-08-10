@@ -35,18 +35,9 @@ class JPC_Config
 	/*
 	 * プログラムの設定
 	 */
-	$this->language = array(
-	    "C (gcc 4.8.5)",
-	    "C++ (g++ 4.8.5)",
-	    "Python 2.7.12",
-	    "Python 3.5.2"
-	);    // 使用可能な言語
-	$this->compile = array(
-	    "gcc {input} -o ./prog; ./prog > {output};",
-	    "g++ {input} -o ./prog; ./prog > {output};",
-	    "pyenv local 2.7.12; python {input} > {output};",
-	    "pyenv local 3.5.2; python {input} > {output};"
-	);    // languageのコンパイル方法
+	$json = file_get_contents(dirname(__FILE__)."/lang.json");
+	$json = mb_convert_encoding($json, 'UTF-8', 'ASCII,JIS,UTF-8,EUC-JP,SJIS-WIN');
+	$this->language = json_decode($json, true);    // 言語とコンパイル
     }
 
     function __construct()

@@ -8,14 +8,14 @@ class JPC_Prob
     {
 	// 正常なポストをフィルタリング
 	if (empty($_GET['id'])) return false;
-	$id = (int)$_GET['id'];
+	$this->id = (int)$_GET['id'];
 	
 	// 問題が存在しない
-	if ($this->problem_exist($id) === false) return false;
+	if ($this->problem_exist($this->id) === false) return false;
 	
 	// 問題の詳細を取得
 	$statement = $this->jpc->pdo->prepare('SELECT * FROM problem WHERE id=:id;');
-	$statement->bindParam(':id', $id, PDO::PARAM_INT);
+	$statement->bindParam(':id', $this->id, PDO::PARAM_INT);
 	$statement->execute();
 	
 	// 結果を取得
@@ -66,6 +66,7 @@ class JPC_Prob
     function __construct($jpc)
     {
 	$this->jpc = $jpc;
+	$this->id = 0;
 	$this->info = array();
     }
 }

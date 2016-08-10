@@ -76,7 +76,7 @@ CREATE TABLE problem(
 
 問題を追加するにはJokenPCのデータベース上で
 
-```
+```sql
 INSERT INTO problem(title, problem, note, ie_input, ie_output, limit_time, limit_memory, input_code, output_code, score, category)
 VALUES(
 	"問題タイトル",

@@ -7,7 +7,7 @@ if ($jpc->prob->get_problem() === false) {
     exit();
 }
 /* ページ設定 */
-$jpc->title = "問題 - JPC";
+$jpc->title = $jpc->prob->info['title']." - JPC";
 $jpc->navbar_active = 2;
 ?>
 <!DOCTYPE html>
@@ -57,13 +57,13 @@ $jpc->navbar_active = 2;
 	    <div class="panel panel-default">
 		<div class="panel-heading">提出</div>
 		<div class="panel-body">
-		    <form class="form-horizontal">
+		    <form class="form-horizontal" method="POST" action=<?php print("./submit.php?id=".(string)$jpc->prob->id); ?>>
 			<div class="form-group">
 			    <label class="col-sm-2 control-label" for="lang">言語</label>
 			    <div class="col-sm-2">
-				<select class="form-control" id="lang">
+				<select class="form-control" id="lang" name="lang">
 				    <?php
-				    foreach($jpc->config->language as $index => $lang) {
+				    foreach($jpc->config->language as $lang => $compile) {
 					print("<option>".$lang."</option>");
 				    }
 				    ?>
@@ -73,7 +73,7 @@ $jpc->navbar_active = 2;
 			<div class="form-group">
 			    <label class="col-sm-2 control-label" for="code">ソースコード</label>
 			    <div class="col-sm-10">
-				<textarea placeholder="ソースコード" rows="32" class="form-control" id="code"></textarea>
+				<textarea placeholder="ソースコード" rows="32" class="form-control" id="code" name="code"></textarea>
 			    </div>
 			</div>
 			<div class="form-group">

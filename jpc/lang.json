@@ -1,0 +1,6 @@
+{
+    "Python 3.5.2"   : "pyenv local 3.5.2; python {input} > {output};",
+    "C++ (g++ 4.8.5)": "g++ {input} -o ./prog; ./prog > {output};",
+    "Python 2.7.12"  : "pyenv local 2.7.12; python {input} > {output};",
+    "C (gcc 4.8.5)"  : "gcc {input} -o ./prog; ./prog > {output};"
+}
