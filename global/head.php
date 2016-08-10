@@ -2,4 +2,5 @@
 <script src="/js/jquery-1.9.1.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 <link href="/css/bootstrap.min.css" rel="stylesheet">
+<script src="/js/aes.js"></script>
 <title><?php print($jpc->title); ?></title>

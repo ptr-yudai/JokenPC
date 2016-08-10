@@ -28,7 +28,7 @@ $jpc->navbar_active = 2;
 		    <!-- カテゴリ一覧 -->
 		    <p>現在、以下の問題が公開されています。</p>
 		    <div class="panel-group" id="category">
-			<?php foreach($jpc->prob->problem_list as $category => $problems) { ?>
+			<?php foreach($jpc->prob->problem_list as $category => $problems) { ?>x
 			    <div class="panel panel-primary">
 				<a class="list-group-item active" data-toggle="collapse" data-parent="#category" href="#category-algorithm">
 				    <?php print($category); ?><span class="badge"><?php print(count($problems)); ?></span>

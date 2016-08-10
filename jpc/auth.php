@@ -145,11 +145,30 @@ class JPC_Auth
     }
 
     /*
+     * ユーザー名を暗号化してbase64
+     */
+    function encrypt_username()
+    {
+	if ($this->is_logged_in() === false) return '';
+	// 初期化
+	srand();
+	$size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+	$iv = mcrypt_create_iv($size, MCRYPT_RAND);
+	$this->enc_iv = base64_encode($iv);
+	// 暗号化
+	$encrypted = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $this->jpc->config->enckey, $_SESSION['username'], MCRYPT_MODE_CBC, $iv);
+	$this->enc_user = base64_encode($encrypted);
+	return;
+    }
+
+    /*
      * コンストラクタ
      */
     function __construct($jpc)
     {
 	$this->jpc = $jpc;
+	$this->enc_user = "";
+	$this->enc_iv = "";
     }
 }
 ?>

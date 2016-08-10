@@ -38,6 +38,7 @@ class JPC_Config
 	$json = file_get_contents(dirname(__FILE__)."/lang.json");
 	$json = mb_convert_encoding($json, 'UTF-8', 'ASCII,JIS,UTF-8,EUC-JP,SJIS-WIN');
 	$this->language = json_decode($json, true)['compile'];    // 言語とコンパイル
+	$this->enckey = md5("k3y1", true);    // 通信暗号化キー(server.pyと共通)
     }
 
     function __construct()

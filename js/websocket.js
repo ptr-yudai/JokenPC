@@ -13,11 +13,15 @@ $(function() {
 	var lang = $('#lang').val();
 	var code = $('#code').val();
 	var id = $('#id').val();
+	var iv = $('#iv').val();
+	var user = $('#user').val();
 	// 通信を開始
 	var payload = {
 	    'lang': lang,
 	    'code': code,
-	    'id': parseInt(id, 10)
+	    'id': parseInt(id, 10),
+	    'iv': iv,
+	    'user': user
 	};
 	ws.send(JSON.stringify(payload));
     };

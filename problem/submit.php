@@ -11,6 +11,8 @@ if (empty($_POST['code']) || empty($_POST['lang'])) {
     header("Location: /problem/");
     exit();
 }
+/* 暗号化ユーザー名を設定 */
+$jpc->auth->encrypt_username();
 /* ページ設定 */
 $jpc->title = "実行 - JPC";
 $jpc->navbar_active = 2;
@@ -70,6 +72,8 @@ $jpc->navbar_active = 2;
 	    <textarea id="id" style="display: none;" disabled><?php print($jpc->h($_GET['id'])); ?></textarea>
 	    <textarea id="lang" style="display: none;" disabled><?php print($jpc->h($_POST['lang'])); ?></textarea>
 	    <textarea id="code" style="display: none;" disabled><?php print($jpc->h($_POST['code'])); ?></textarea>
+	    <textarea id="iv" style="display: none;" disabled><?php print($jpc->auth->enc_iv); ?></textarea>
+	    <textarea id="user" style="display: none;" disabled><?php print($jpc->auth->enc_user); ?></textarea>
 	</div>
     </body>
 </html>

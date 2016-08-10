@@ -8,17 +8,20 @@
 import commands
 from geventwebsocket.handler import WebSocketHandler
 from gevent import pywsgi, sleep
+import hashlib
 import json
 import MySQLdb
 import os
+from Crypto.Cipher import AES
 import pwd
 import random
 import string
 
 # 基本設定
-HOST = "127.0.0.1"                   # サーバーのアドレス
-PORT = 8080                          # ポート番号
-LANG = "/var/www/html/jpc/lang.json" # 言語一覧のファイルパス
+HOST = "127.0.0.1"                    # サーバーのアドレス
+PORT = 8080                           # ポート番号
+LANG = "/var/www/html/jpc/lang.json"  # 言語一覧のファイルパス
+ENCKEY = hashlib.md5("k3y1").digest() # 暗号化キー("/jpc/config.php"と同じ)
 
 # データベース設定("/jpc/config.php"と同じ)
 DB_HOST = 'localhost'
@@ -136,6 +139,7 @@ def randstr(length):
 def handler(env, response):
     global langlist
     global DB
+    global ENCKEY
     
     ws = env['wsgi.websocket']
     print(".[INFO] 新しい要求を受信しました。")
@@ -158,6 +162,13 @@ def handler(env, response):
             print(".[ERROR] 既に接続が切断されています。")
         return
 
+    # ユーザー名を復号化
+    iv = packet['iv'].decode('base64')
+    enc_user = packet['user'].decode('base64')
+    aes = AES.new(ENCKEY, AES.MODE_CBC, iv)
+    user = aes.decrypt(enc_user)
+    print(".[INFO] この試行のユーザーは{0}です。".format(user))
+
     # 問題を取得
     cursor = DB.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SELECT * FROM problem WHERE id={id};".format(id=packet['id']))
@@ -179,6 +190,8 @@ def check_payload(packet):
     if 'lang' not in packet : return False
     if 'code' not in packet : return False
     if 'id'   not in packet : return False
+    if 'iv'   not in packet : return False
+    if 'user' not in packet : return False
     # 言語が使用可能か
     if 'compile' not in langlist   : return False
     if 'extension' not in langlist : return False
