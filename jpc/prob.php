@@ -24,6 +24,39 @@ class JPC_Prob
 	
 	return true;
     }
+
+    /*
+       全ての問題を取得
+     */
+    function get_all_problems()
+    {
+	// データベースに接続できていない
+	if ($this->jpc->pdo === null) {
+	    $this->jpc->log('warning', "データベースに接続できません。", false);
+	    return false;
+	}
+
+	// 全てのジャンルを取得
+	$this->get_all_categories();
+	
+	// 全ての問題を分類
+	$statement = 'SELECT * FROM problem;';
+	foreach($this->jpc->pdo->query($statement) as $row) {
+	    $this->problem_list[$row['category']][] = $row;
+	}
+    }
+
+    /*
+       全てのジャンルを取得
+     */
+    function get_all_categories()
+    {
+	// 全てのジャンルを取得
+	$statement = 'SELECT category FROM problem;';
+	foreach($this->jpc->pdo->query($statement) as $row) {
+	    $this->problem_list[$row['category']] = array();
+	}
+    }
   
     /*
        見やすい形式に変更する
@@ -68,5 +101,6 @@ class JPC_Prob
 	$this->jpc = $jpc;
 	$this->id = 0;
 	$this->info = array();
+	$this->problem_list = array();
     }
 }

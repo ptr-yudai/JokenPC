@@ -73,7 +73,7 @@ $jpc->navbar_active = 2;
 			<div class="form-group">
 			    <label class="col-sm-2 control-label" for="code">ソースコード</label>
 			    <div class="col-sm-10">
-				<textarea placeholder="ソースコード" rows="16" class="form-control" id="code" name="code"></textarea>
+				<textarea placeholder="ソースコード" rows="16" class="form-control" id="code" name="code" required></textarea>
 			    </div>
 			</div>
 			<div class="form-group">

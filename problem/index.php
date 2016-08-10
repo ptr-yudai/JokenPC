@@ -5,6 +5,8 @@ $jpc = new JPC();
 if ($jpc->auth->is_logged_in() === false) {
     header("Location: /login/");
 }
+/* 全問題を取得 */
+$jpc->prob->get_all_problems();
 /* ページ設定 */
 $jpc->title = "問題一覧 - JPC";
 $jpc->navbar_active = 2;
@@ -26,68 +28,34 @@ $jpc->navbar_active = 2;
 		    <!-- カテゴリ一覧 -->
 		    <p>現在、以下の問題が公開されています。</p>
 		    <div class="panel-group" id="category">
-			<!-- Algorithm -->
-			<div class="panel panel-primary">
+			<?php foreach($jpc->prob->problem_list as $category => $problems) { ?>
+			    <div class="panel panel-primary">
 				<a class="list-group-item active" data-toggle="collapse" data-parent="#category" href="#category-algorithm">
-				    Algorithm
-				    <span class="badge">5</span>
+				    <?php print($category); ?><span class="badge"><?php print(count($problems)); ?></span>
 				</a>
-			    <div class="panel-collapse collapse" id="category-algorithm">
-				<div class="panel-body">
-				    <table class="table table-hover">
-					<thead>
-					    <tr>
-						<th></th>
-						<th>問題</th>
-						<th>スコア</th>
-						<th>正解者数</th>
-					    </tr>
-					</thead>
-					<tbody>
-					    <tr>
-						<td><span class="glyphicon glyphicon-ok"></span></td>
-						<td>練習問題</td>
-						<td>10</td>
-						<td>4</td>
-					    </tr>
-					</tbody>
-				    </table>
+				<div class="panel-collapse collapse" id="category-algorithm">
+				    <div class="panel-body">
+					<table class="table table-hover">
+					    <thead>
+						<tr>
+						    <th></th><th>問題</th><th>スコア</th><th>正解者数</th>
+						</tr>
+					    </thead>
+					    <tbody>
+						<?php foreach($problems as $index => $record) { ?>
+						    <tr>
+							<td><span class="glyphicon glyphicon-ok"></span></td>
+							<td><a href="/problem/problem.php?id=<?php print($record['id']); ?>" target="_blank"><?php print($jpc->h($record['title'])); ?></a></td>
+							<td><?php print((string)$record['score']."[pt]"); ?></td>
+							<td><?php print((string)$record['solved']); ?></td>
+						    </tr>
+						<?php } ?>
+					    </tbody>
+					</table>
+				    </div>
 				</div>
 			    </div>
-			</div>
-			<!-- Math -->
-			<div class="panel panel-primary">
-			    <a class="list-group-item active" data-toggle="collapse" data-parent="#category" href="#category-math">
-				Math
-			    </a>
-			    <div class="panel-collapse collapse" id="category-math">
-				<div class="panel-body">
-				    <p>Hello, world!</p>
-				</div>
-			    </div>
-			</div>
-			<!-- Cryptography -->
-			<div class="panel panel-primary">
-			    <a class="list-group-item active" data-toggle="collapse" data-parent="#category" href="#category-cryptography">
-				Cryptography
-			    </a>
-			    <div class="panel-collapse collapse" id="category-cryptography">
-				<div class="panel-body">
-				    <p>Hello, world!</p>
-				</div>
-			    </div>
-			</div>
-			<!-- Data Proc -->
-			<div class="panel panel-primary">
-			    <a class="list-group-item active" data-toggle="collapse" data-parent="#category" href="#category-data">
-				Media
-			    </a>
-			    <div class="panel-collapse collapse" id="category-data">
-				<div class="panel-body">
-				    <p>Hello, world!</p>
-				</div>
-			    </div>
-			</div>
+			<?php } ?>
 		    </div>
 		</div>
 	    </div>
