@@ -3,6 +3,7 @@ ini_set('display_errors', 1);
 session_start();
 require(dirname(__FILE__).'/config.php');
 require(dirname(__FILE__).'/auth.php');
+require(dirname(__FILE__).'/prob.php');
 
 class JPC
 {
@@ -61,6 +62,8 @@ class JPC
 	
 	// 認証モジュール
 	$this->auth = new JPC_Auth($this);
+	// 問題モジュール
+	$this->prob = new JPC_Prob($this);
     }
     
     function __construct()

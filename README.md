@@ -12,6 +12,8 @@ JokenPC BETA
 ## Requirement
 
 PHP5.xくらい
+MySQL / MariaDBなど
+Python 2.7
 
 ## Usage
 
@@ -59,7 +61,8 @@ CREATE TABLE problem(
     limit_time INT NOT NULL,
     limit_memory INT NOT NULL,
     input_code CHAR(64) NOT NULL,
-    output_code CHAR(64) NOT NULL, 
+    output_code CHAR(64) NOT NULL,
+    exec_time INT NOT NULL,
     score INT NOT NULL,
     category CHAR(64) NOT NULL,
     solved INT NOT NULL,
@@ -70,6 +73,29 @@ CREATE TABLE problem(
 ```
 
 設定を/jpc/config.phpに記述し、PHPを動作できる環境に設置したら完了です。
+
+問題を追加するにはJokenPCのデータベース上で
+
+```
+INSERT INTO problem(title, problem, note, ie_input, ie_output, limit_time, limit_memory, input_code, output_code, score, category)
+VALUES(
+	"問題タイトル",
+	"問題文(html記法)",
+	"備考(html記法)",
+	"入力例",
+	"出力例",
+	制限時間(ミリ秒),
+	制限メモリ(キロバイト),
+	"入力を生成するコードのパス",
+	"入力から出力を生成するコード(解答)のパス",
+	入力チェック回数,
+	得点,
+	"カテゴリ"
+);
+```
+
+を実行する。
+なお、入出力のコードはHTTP経由で閲覧できない場所に設置すること。
 
 ## Note
 

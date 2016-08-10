@@ -130,6 +130,13 @@ class JPC_Auth
      */
     function user_exist($username)
     {
+	// データベースに接続できていない
+	if ($this->jpc->pdo === null) {
+	    $this->jpc->log('warning', "データベースに接続できません。", false);
+	    return;
+	}
+
+	// ユーザー名を確認
 	$statement = $this->jpc->pdo->prepare('SELECT id FROM account WHERE user=:user;');
 	$statement->bindParam(':user', $username, PDO::PARAM_STR);
 	$statement->execute();

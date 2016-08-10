@@ -31,6 +31,22 @@ class JPC_Config
 	$this->db_username = 'pc_master';      // アクセスするユーザー名
 	$this->db_password = 'debug_password'; // ユーザーのパスワード
 	$this->salt = 'debug_salt';            // パスワードハッシュのソルト
+
+	/*
+	 * プログラムの設定
+	 */
+	$this->language = array(
+	    "C (gcc 4.8.5)",
+	    "C++ (g++ 4.8.5)",
+	    "Python 2.7.12",
+	    "Python 3.5.2"
+	);    // 使用可能な言語
+	$this->compile = array(
+	    "gcc {input} -o ./prog; ./prog > {output};",
+	    "g++ {input} -o ./prog; ./prog > {output};",
+	    "pyenv local 2.7.12; python {input} > {output};",
+	    "pyenv local 3.5.2; python {input} > {output};"
+	);    // languageのコンパイル方法
     }
 
     function __construct()
