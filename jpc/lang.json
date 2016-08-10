@@ -1,6 +1,14 @@
 {
-    "Python 3.5.2"   : "pyenv local 3.5.2; python {input} > {output};",
-    "C++ (g++ 4.8.5)": "g++ {input} -o ./prog; ./prog > {output};",
-    "Python 2.7.12"  : "pyenv local 2.7.12; python {input} > {output};",
-    "C (gcc 4.8.5)"  : "gcc {input} -o ./prog; ./prog > {output};"
+    "compile":{
+	"C (gcc 4.8.5)"  : "gcc {input} -o {output}",
+	"C++ (g++ 4.8.5)": "g++ {input} -o {output}",
+	"Python 2.7.12"  : "pyenv local 2.7.12; mv {input} {output}; sed -i -e '1i #!python' {output}",
+	"Python 3.5.2"   : "pyenv local 3.5.2; mv {input} {output}; sed -i -e '1i #!python' {output}"
+    },
+    "extension":{
+	"C (gcc 4.8.5)"  : ".c",
+	"C++ (g++ 4.8.5)": ".cpp",
+	"Python 2.7.12"  : ".py",
+	"Python 3.5.2"   : ".py"
+    }
 }

@@ -38,9 +38,17 @@ $jpc->navbar_active = 2;
 		<div class="panel-heading">実行</div>
 		<div class="panel-body">
 		    <p>プログラムをチェックしています。</p>
-		    <div id="target"></div>
 		</div>
 	    </div>
+
+	    <!-- Panel : コンパイル結果 -->
+	    <div class="panel panel-default">
+		<div class="panel-heading">コンパイル結果</div>
+		<div class="panel-body">
+		    <code id="compile">なし</code>
+		</div>
+	    </div>
+
 	    <textarea id="id" style="display: none;" disabled><?php print($jpc->h($_GET['id'])); ?></textarea>
 	    <textarea id="lang" style="display: none;" disabled><?php print($jpc->h($_POST['lang'])); ?></textarea>
 	    <textarea id="code" style="display: none;" disabled><?php print($jpc->h($_POST['code'])); ?></textarea>
