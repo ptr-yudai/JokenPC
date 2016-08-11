@@ -145,6 +145,45 @@ class JPC_Auth
     }
 
     /*
+     * 問題が解答済みかを調べる
+     */
+    function is_solved($id)
+    {
+	// データベースに接続できていない
+	if ($this->jpc->pdo === null) {
+	    $this->jpc->log('warning', "データベースに接続できません。", false);
+	    return true;
+	}
+	
+	$this->get_userinfo();
+	$probs = explode(',', $this->userinfo['solved']);
+	foreach($probs as $index=>$prob) {
+	    if ((string)$prob === (string)$id) {
+		return true;
+	    }
+	}
+	return false;
+    }
+
+    /*
+     * ユーザー情報を取得する
+     */
+    function get_userinfo()
+    {
+	// データベースに接続できていない
+	if ($this->jpc->pdo === null) {
+	    $this->jpc->log('warning', "データベースに接続できません。", false);
+	    return;
+	}
+
+	// ユーザー情報を確認
+	$statement = $this->jpc->pdo->prepare('SELECT * FROM account WHERE user=:user;');
+	$statement->bindParam(':user', $_SESSION['username'], PDO::PARAM_STR);
+	$statement->execute();
+	$this->userinfo = $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /*
      * ユーザー名を暗号化してbase64
      */
     function encrypt_username()
@@ -169,6 +208,7 @@ class JPC_Auth
 	$this->jpc = $jpc;
 	$this->enc_user = "";
 	$this->enc_iv = "";
+	$this->userinfo = array();
     }
 }
 ?>

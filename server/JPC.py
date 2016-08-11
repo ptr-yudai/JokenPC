@@ -111,20 +111,24 @@ class JPC:
             if result == False:
                 self.ws.send(json.dumps({'failure': n + 1}))
                 clear = False
+                print("[INFO] タイムアウトしました。")
                 continue
             # 結果が違う
             if self.output_data.rstrip('\n') != result.rstrip('\n'):
                 self.ws.send(json.dumps({'failure': n + 1}))
                 clear = False
+                print("[INFO] 結果に誤りがあります。")
                 continue
             # 実行結果を宣言
             try:
                 self.ws.send(json.dumps({'success': n + 1}))
+                print("[INFO] チェックが成功しました。")
             except Exception:
                 pass
         # 成功通知
         if clear:
             self.ws.send('{"complete":"success"}')
+            self.update_db()
         else:
             self.ws.send('{"complete":"failure"}')
 
@@ -176,6 +180,26 @@ class JPC:
         return stdout
 
     #
+    # 点数を追加
+    #
+    def update_db(self):
+        import time
+        cursor = self.db.cursor(MySQLdb.cursors.DictCursor)
+        # スコアを追加
+        cursor.execute("UPDATE account SET score=score+{score} WHERE user='{user}';".format(score=int(self.record['score']), user=self.user))
+        # 解答済み問題を追加
+        cursor.execute("UPDATE account SET solved=concat('{id},', solved) WHERE user='{user}';".format(id=self.record['id'], user=self.user))
+        # 解答数をインクリメント
+        cursor.execute("UPDATE problem SET solved=solved+1 WHERE id={id};".format(id=self.record['id']))
+        # 解答ユーザーを更新
+        cursor.execute("UPDATE problem SET solved_user='{user}' WHERE id={id};".format(user=self.user, id=self.record['id']))
+        # 解答時間を更新
+        cursor.execute("UPDATE problem SET last_date='{date}' WHERE id={id};".format(date=time.strftime('%Y-%m-%d %H:%M:%S'), id=self.record['id']))
+        cursor.close()
+        self.db.commit()
+        return
+
+    #
     # 新規要求を処理
     #
     def handle(self, env, response):
@@ -220,8 +244,11 @@ class JPC:
         iv = self.packet['iv'].decode('base64')
         enc_user = self.packet['user'].decode('base64')
         aes = AES.new(self.enckey, AES.MODE_CBC, iv)
-        self.user = aes.decrypt(enc_user)
+        self.user = aes.decrypt(enc_user).replace('\x00', '')
         print("[INFO] この試行のユーザーは{0}です。".format(self.user))
+        # エスケープ
+        self.user = MySQLdb.escape_string(self.user)
+        self.packet['id'] = int(self.packet['id'])
         return True
         
     #

@@ -20,6 +20,14 @@ $jpc->navbar_active = 2;
     <body>
 	<?php require(dirname(__FILE__).'/../global/navbar.php'); ?>
 	<div class="container-fluid">
+	    <!-- Info : 解答済み -->
+	    <?php if ($jpc->auth->is_solved($jpc->prob->info['id'])) { ?>
+		<div class="alert alert-info fade in" id="complete">
+		    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+		    <strong>情報： </strong>
+		    <p>あなたは既にこの問題を解答済みです。</p>
+		</div>
+	    <?php } ?>
 	    <!-- Panel : 問題 -->
 	    <div class="panel panel-default">
 		<div class="panel-heading"><?php print($jpc->prob->info['title']); ?></div>

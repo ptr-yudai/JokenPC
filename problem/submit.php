@@ -11,6 +11,11 @@ if (empty($_POST['code']) || empty($_POST['lang'])) {
     header("Location: /problem/");
     exit();
 }
+/* 正解済み */
+if ($jpc->auth->is_solved($jpc->prob->info['id'])) {
+    header("Location: /problem/");
+    exit();
+}
 /* 暗号化ユーザー名を設定 */
 $jpc->auth->encrypt_username();
 /* ページ設定 */

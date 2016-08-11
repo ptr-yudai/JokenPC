@@ -44,7 +44,11 @@ $jpc->navbar_active = 2;
 					    <tbody>
 						<?php foreach($problems as $index => $record) { ?>
 						    <tr>
-							<td><span class="glyphicon glyphicon-ok"></span></td>
+							<?php if ($jpc->auth->is_solved($record['id'])) { ?>
+							    <td><span class="glyphicon glyphicon-ok"></span></td>
+							<?php } else { ?>
+							    <td><span class="glyphicon glyphicon-remove"></span></td>
+							<?php } ?>
 							<td><a href="/problem/problem.php?id=<?php print($record['id']); ?>" target="_blank"><?php print($jpc->h($record['title'])); ?></a></td>
 							<td><?php print((string)$record['score']."[pt]"); ?></td>
 							<td><?php print((string)$record['solved']); ?></td>
