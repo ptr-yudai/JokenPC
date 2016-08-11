@@ -8,5 +8,5 @@
 import JPC
 
 if __name__ == '__main__':
-    server = JPC.JPC("config.json")
+    server = JPC.JPC("/var/www/html/server/config.json")
     server.run()

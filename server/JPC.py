@@ -30,6 +30,7 @@ class JPC:
     # チェック
     #
     def execute(self):
+        import codecs
         import commands
         import os
         import pwd
@@ -51,7 +52,7 @@ class JPC:
         except Exception:
             return
         # コードを生成
-        fp = open(filepath_in, 'w')
+        fp = codecs.open(filepath_in, 'w', 'utf-8')
         fp.write(code)
         fp.close()
         # コンパイル
@@ -87,6 +88,7 @@ class JPC:
         # チェックする
         clear = True
         for n in range(int(self.record['exec_time'])):
+            print("[INFO] {0}回目の試行が開始されました。".format(n + 1))
             # 実行開始を宣言
             try:
                 self.ws.send(json.dumps({'attempt': n + 1}))
@@ -105,6 +107,16 @@ class JPC:
             print "Input : ", self.input_data
             print "Answer : ", self.output_data
             print "Result : ", result
+            # タイムアウト
+            if result == False:
+                self.ws.send(json.dumps({'failure': n + 1}))
+                clear = False
+                continue
+            # 結果が違う
+            if self.output_data.rstrip('\n') != result.rstrip('\n'):
+                self.ws.send(json.dumps({'failure': n + 1}))
+                clear = False
+                continue
             # 実行結果を宣言
             try:
                 self.ws.send(json.dumps({'success': n + 1}))
@@ -135,6 +147,7 @@ class JPC:
                 'su',
                 username,
                 '-c',
+                ''
                 './{0}'.format(filepath)
             ],
             stdout = subprocess.PIPE,
@@ -147,16 +160,15 @@ class JPC:
         # 時間制限を設定
         deadline = time.time() + float(self.record['limit_time']) / 1000.0
         while time.time() < deadline and proc.poll() == None:
-            time.sleep(0.25)
+            time.sleep(0.20)
         # タイムアウト
         if proc.poll() == None:
             if float(sys.version[:3]) >= 2.6:
                 proc.terminate()
-            return ''
+            return False
         # 正常終了
         stdout = proc.stdout.read()
-        stderr = proc.stderr.read()
-        return stdout, stderr, proc.returncode
+        return stdout
 
     #
     # 新規要求を処理
