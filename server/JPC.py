@@ -77,6 +77,8 @@ class JPC:
         try:
             os.chmod(filepath_out, 0500)
             os.chown(filepath_out, pwnam.pw_uid, pwnam.pw_gid)
+            # 出力例も一応
+            os.chown(self.record['output_code'], pwnam.pw_uid, pwnam.pw_gid)
         except Exception:
             try:
                 os.remove(filepath_out)
@@ -96,17 +98,15 @@ class JPC:
                 pass
             # 入力を生成
             self.input_data = commands.getoutput(
-                self.record['input_code']
+                self.record['input_code'] + " " + str(n)
             )
             # 出力を生成
-            self.output_data = commands.getoutput(
-                self.record['output_code']
-            )
+            self.output_data = self.run_command(username, self.record['output_code'])
             # 実行結果を取得
-            result = self.run_command(username, filepath_out)
-            print "Input : ", self.input_data
-            print "Answer : ", self.output_data
-            print "Result : ", result
+            result = self.run_command(username, './'+filepath_out)
+            #print "Input : ", self.input_data
+            #print "Answer : ", self.output_data
+            #print "Result : ", result
             # タイムアウト
             if result == False:
                 self.ws.send(json.dumps({'failure': n + 1}))
@@ -124,7 +124,10 @@ class JPC:
                 pass
         # 成功通知
         if clear:
-            self.ws.send('{"complete":""}')
+            self.ws.send('{"complete":"success"}')
+        else:
+            self.ws.send('{"complete":"failure"}')
+
         # 実行ファイルを削除
         try:
             os.remove(filepath_out)
@@ -147,15 +150,17 @@ class JPC:
                 'su',
                 username,
                 '-c',
-                ''
-                './{0}'.format(filepath)
+                'ulimit',
+                '-v',
+                str(self.record['limit_memory']),
+                filepath
             ],
             stdout = subprocess.PIPE,
             stderr = subprocess.PIPE,
             stdin = subprocess.PIPE,
         )
         # 入力を送る
-        proc.stdin.write(self.input_data)
+        proc.stdin.write(self.input_data.rstrip('\n') + '\n')
         proc.stdin.close()
         # 時間制限を設定
         deadline = time.time() + float(self.record['limit_time']) / 1000.0

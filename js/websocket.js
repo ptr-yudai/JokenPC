@@ -55,7 +55,12 @@ $(function() {
 	    }
 	} else if ('complete' in info) {
 	    // 全て終了
-	    $('#complete').prop("style", "display: block;");
+	    if (info['complete'] == 'success') {
+		$('#complete').prop("style", "display: block;");
+	    } else {
+		$('#error').prop("style", "display: block;");
+		$('#error-message').html("残念！出力結果が違うようです。");
+	    }
 	} else if ('success' in info) {
 	    // 入力に成功
 	    $("#icon" + info['success'].toString()).removeClass().addClass("glyphicon glyphicon-ok").css('color', 'green');

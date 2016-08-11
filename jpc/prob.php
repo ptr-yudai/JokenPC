@@ -67,8 +67,8 @@ class JPC_Prob
 	$this->info['lim_time'] = (string)($this->info['limit_time'] / 1000.0)."[sec]";
 
 	// キロバイト
-	if ($this->info['limit_memory'] >= 128) {
-	    $this->info['lim_memory'] = (string)($this->info['limit_memory'] / 128.0)."[MB]";
+	if ($this->info['limit_memory'] >= 1024) {
+	    $this->info['lim_memory'] = (string)($this->info['limit_memory'] / 1024.0)."[MB]";
 	} else {
 	    $this->info['lim_memory'] = (string)($this->info['limit_memory'])."[KB]";
 	}
