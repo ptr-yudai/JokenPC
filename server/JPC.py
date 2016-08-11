@@ -1,0 +1,268 @@
+# coding: utf-8
+
+from geventwebsocket.handler import WebSocketHandler
+from gevent import pywsgi, sleep
+import json
+import MySQLdb
+
+class JPC:
+    #
+    # 初期化
+    #
+    def __init__(self, filepath_config):
+        import hashlib
+        # 設定ファイルをロード
+        fp = open(filepath_config, 'r')
+        config = json.load(fp)
+        fp.close()
+        # 設定をクラス変数に格納
+        self.host        = config['host']
+        self.port        = config['port']
+        self.langlist    = json.load(open(config['langfile'], 'r'))
+        self.enckey      = hashlib.md5(config['key']).digest()
+        self.db_host     = config['db_host']
+        self.db_name     = config['db_name']
+        self.db_username = config['db_username']
+        self.db_password = config['db_password']
+        return
+
+    #
+    # チェック
+    #
+    def execute(self):
+        import commands
+        import os
+        import pwd
+        # 情報を取得
+        code = self.packet['code']
+        lang = self.packet['lang']
+        script = self.langlist['compile'][lang]
+        extension = self.langlist['extension'][lang]
+        # 必要なデータを生成
+        filepath_in = self.randstr(8) + extension
+        filepath_out = self.randstr(8)
+        username = self.randstr(16)
+        # /tmpに移動
+        os.chdir('/tmp/')
+        # ユーザーを作成する
+        try:
+            os.system("useradd {0}".format(username))
+            pwnam = pwd.getpwnam(username)
+        except Exception:
+            return
+        # コードを生成
+        fp = open(filepath_in, 'w')
+        fp.write(code)
+        fp.close()
+        # コンパイル
+        compile_result = commands.getoutput(
+            script.format(input=filepath_in, output=filepath_out)
+        )
+        # コードを削除
+        try:
+            os.remove(filepath_in)
+        except Exception:
+            pass
+        # コンパイル結果を送信
+        try:
+            self.ws.send(json.dumps({'compile': compile_result}))
+        except Exception:
+            pass
+        # コンパイルできているか
+        if not os.path.exists(filepath_out):
+            print("[INFO] コンパイルに失敗しました。")
+            return
+        # 実行ファイルの権限を変更
+        try:
+            os.chmod(filepath_out, 0500)
+            os.chown(filepath_out, pwnam.pw_uid, pwnam.pw_gid)
+        except Exception:
+            try:
+                os.remove(filepath_out)
+                os.system("userdel {0}".format(username))
+            except Exception:
+                print("[ERROR] /tmp/{0}の削除に失敗しました。".format(filepath_out))
+                print("[ERROR] ユーザー{0}の削除に失敗しました。".format(username))
+            return
+        # チェックする
+        clear = True
+        for n in range(int(self.record['exec_time'])):
+            # 実行開始を宣言
+            try:
+                self.ws.send(json.dumps({'attempt': n + 1}))
+            except Exception:
+                pass
+            # 入力を生成
+            self.input_data = commands.getoutput(
+                self.record['input_code']
+            )
+            # 出力を生成
+            self.output_data = commands.getoutput(
+                self.record['output_code']
+            )
+            # 実行結果を取得
+            result = self.run_command(username, filepath_out)
+            print "Input : ", self.input_data
+            print "Answer : ", self.output_data
+            print "Result : ", result
+            # 実行結果を宣言
+            try:
+                self.ws.send(json.dumps({'success': n + 1}))
+            except Exception:
+                pass
+        # 成功通知
+        if clear:
+            self.ws.send('{"complete":""}')
+        # 実行ファイルを削除
+        try:
+            os.remove(filepath_out)
+            os.system("userdel {0}".format(username))
+        except Exception:
+            print("[ERROR] /tmp/{0}の削除に失敗しました。".format(filepath_out))
+            print("[ERROR] ユーザー{0}の削除に失敗しました。".format(username))
+        return
+
+    #
+    # コマンドを制限付きで実行
+    #
+    def run_command(self, username, filepath):
+        import subprocess
+        import time
+        import sys
+        # プロセスを生成
+        proc = subprocess.Popen(
+            [
+                'su',
+                username,
+                '-c',
+                './{0}'.format(filepath)
+            ],
+            stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE,
+            stdin = subprocess.PIPE,
+        )
+        # 入力を送る
+        proc.stdin.write(self.input_data)
+        proc.stdin.close()
+        # 時間制限を設定
+        deadline = time.time() + float(self.record['limit_time']) / 1000.0
+        while time.time() < deadline and proc.poll() == None:
+            time.sleep(0.25)
+        # タイムアウト
+        if proc.poll() == None:
+            if float(sys.version[:3]) >= 2.6:
+                proc.terminate()
+            return ''
+        # 正常終了
+        stdout = proc.stdout.read()
+        stderr = proc.stderr.read()
+        return stdout, stderr, proc.returncode
+
+    #
+    # 新規要求を処理
+    #
+    def handle(self, env, response):
+        self.ws = env['wsgi.websocket']
+        print("[INFO] 新しい要求を受信しました。")
+        # 要求を取得
+        self.packet = self.ws.receive()
+        if not self.analyse_packet(): return
+        # 問題を取得
+        self.get_problem()
+        # 実行
+        self.execute()
+        return
+
+    #
+    # 問題の詳細を取得
+    #
+    def get_problem(self):
+        cursor = self.db.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT * FROM problem WHERE id={id};".format(id=self.packet['id']))
+        self.record = cursor.fetchall()[0]
+        cursor.close()
+        return
+
+    #
+    # データを解析
+    #
+    def analyse_packet(self):
+        from Crypto.Cipher import AES
+        # パケットをJSONとして展開
+        try:
+            self.packet = json.loads(self.packet)
+        except Exception:
+            print("[ERROR] JSONの展開に失敗しました。")
+            return False
+        # データの整合性を確認
+        if not self.check_payload():
+            print("[ERROR] 不正なデータであると判別されました。")
+            self.ws.send('{"error":"無効なデータが送信されました。"}')
+            return False
+        # ユーザー名を復号化
+        iv = self.packet['iv'].decode('base64')
+        enc_user = self.packet['user'].decode('base64')
+        aes = AES.new(self.enckey, AES.MODE_CBC, iv)
+        self.user = aes.decrypt(enc_user)
+        print("[INFO] この試行のユーザーは{0}です。".format(self.user))
+        return True
+        
+    #
+    # payloadが有効かを調べる
+    #
+    def check_payload(self):
+        # 最低限の情報が記載されているか
+        if 'lang' not in self.packet : return False
+        if 'code' not in self.packet : return False
+        if 'id'   not in self.packet : return False
+        if 'iv'   not in self.packet : return False
+        if 'user' not in self.packet : return False
+        # 言語が使用可能か
+        if 'compile' not in self.langlist   : return False
+        if 'extension' not in self.langlist : return False
+        if self.packet['lang'] not in self.langlist['compile']   : return False
+        if self.packet['lang'] not in self.langlist['extension'] : return False
+        # データが正しい
+        return True
+
+    #
+    # ランダムな文字列を生成
+    #
+    def randstr(self, length):
+        import random
+        import string
+        return ''.join([
+            random.choice(string.ascii_letters + string.digits)
+            for i in range(length)
+        ])
+
+
+    #
+    # リクエストを受ける
+    #
+    def procon(self, env, response):
+        path = env['PATH_INFO']
+        if path == "/":
+            return self.handle(env, response)
+        return
+
+    #
+    # サーバーを稼働させる
+    #
+    def run(self):
+        # サーバー初期化
+        server = pywsgi.WSGIServer(
+            (self.host, self.port),
+            self.procon,
+            handler_class = WebSocketHandler
+        )
+        # SQLへの接続
+        self.db = MySQLdb.connect(host    = self.db_host,
+                                  db      = self.db_name,
+                                  user    = self.db_username,
+                                  passwd  = self.db_password,
+                                  charset = 'utf8',
+                              )
+        # サーバー稼働
+        server.serve_forever()
+        return

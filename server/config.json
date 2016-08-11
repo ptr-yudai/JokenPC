@@ -1,0 +1,19 @@
+{
+    "host" : "COMMENT : サーバーのアドレス",
+    "host" : "127.0.0.1",
+    
+    "port" : "COMMENT : 通信に使用するポート",
+    "port" : 8080,
+    
+    "langfile" : "COMMENT : 言語とコンパイラ設定ファイルのパス",
+    "langfile" : "/var/www/html/jpc/lang.json",
+
+    "key" : "COMMENT : 暗号化キー(/jpc/config.phpと同じ)",
+    "key" : "k3y1",
+
+    "db" : "COMMENT : データーベース設定(/jpb/config.phpと同じ)",
+    "db_host" : "localhost",
+    "db_name" : "joken_procon",
+    "db_username" : "pc_master",
+    "db_password" : "debug_password"
+}
