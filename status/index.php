@@ -38,7 +38,10 @@ $jpc->navbar_active = 3;
 				<tbody>
 				    <?php foreach($jpc->auth->users as $index=>$user) { ?>
 					<tr>
-					    <td><span<?php print($jpc->auth->put_king($index)); ?>></span><?php print((string)($index + 1)); ?></td>
+					    <td>
+						<span<?php print($jpc->auth->put_king($index)); ?>></span>
+						<?php print($jpc->auth->get_rank($user['score'])); ?>
+					    </td>
 					    <td><?php print($user['user']); ?></td>
 					    <td><?php print(''.$user['score'].'[pt]'); ?></td>
 					</tr>

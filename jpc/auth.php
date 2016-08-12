@@ -194,7 +194,23 @@ class JPC_Auth
 	$query = $this->jpc->pdo->query('SELECT * FROM account;');
 	$this->users = $query->fetchAll(PDO::FETCH_ASSOC);
 	// ソート
-	array_multisort(array_column($this->users, 'score'), SORT_DESC, $this->users);
+	usort($this->users, function($a, $b) {
+	    return $b['score'] - $a['score'];
+	});
+    }
+
+    /*
+     * ランクを取得
+     */
+    function get_rank($score)
+    {
+	foreach($this->users as $index => $user) {
+	    if ((string)$user['score'] === (string)$score) {
+		$rank = $index + 1;
+		break;
+	    }
+	}
+	return $rank;
     }
 
     /*
