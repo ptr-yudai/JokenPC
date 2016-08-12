@@ -1,6 +1,10 @@
 <?php
 require(dirname(__FILE__).'/../jpc/init.php');
 $jpc = new JPC();
+/* ログイン済み */
+if ($jpc->auth->is_logged_in() === false) {
+    header("Location: /login/");
+}
 /* 問題番号から詳細を取得 */
 if ($jpc->prob->get_problem() === false) {
     header("Location: /problem/");

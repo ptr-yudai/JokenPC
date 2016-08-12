@@ -6,10 +6,10 @@ if ($jpc->auth->is_logged_in() === false) {
     header("Location: /login/");
 }
 /* ユーザー情報を取得 */
-$jpc->auth->get_userinfo();
+$jpc->auth->get_all_userinfo();
 /* ページ設定 */
-$jpc->title = "個人設定 - JPC";
-$jpc->navbar_active = -1;
+$jpc->title = "ステータス - JPC";
+$jpc->navbar_active = 3;
 ?>
 <!DOCTYPE html>
 <html>
@@ -23,34 +23,28 @@ $jpc->navbar_active = -1;
 	<div class="container-fluid">
 	    <!-- Panel : 問題一覧 -->
 	    <div class="panel panel-default">
-		<div class="panel-heading">ステータス</div>
+		<div class="panel-heading">順位</div>
 		<div class="panel-body">
 		    <div class="panel-group" id="category">
 			<div class="panel-body">
-			    <table class="table table-bordered">
+			    <table class="table table-striped table-bordered">
 				<thead>
 				    <tr>
-					<th class="col-md-2">ユーザー名</th>
-					<td class="col-md-8"><?php print($jpc->h($jpc->auth->userinfo['user'])); ?></td>
+					<th class="col-md-1">順位</th>
+					<th>名前</th>
+					<th>スコア</th>
 				    </tr>
 				</thead>
 				<tbody>
-				    <tr>
-					<th>スコア</th>
-					<td><?php print($jpc->h($jpc->auth->userinfo['score'])."[pt]"); ?></td>
-				    </tr>
+				    <?php foreach($jpc->auth->users as $index=>$user) { ?>
+					<tr>
+					    <td><span<?php print($jpc->auth->put_king($index)); ?>></span><?php print((string)($index + 1)); ?></td>
+					    <td><?php print($user['user']); ?></td>
+					    <td><?php print(''.$user['score'].'[pt]'); ?></td>
+					</tr>
+				    <?php } ?>
 				</tbody>
 			    </table>
-			</div>
-		    </div>
-		</div>
-	    </div>
-	    <!-- Panel : 設定変更 -->
-	    <div class="panel panel-default">
-		<div class="panel-heading">個人設定</div>
-		<div class="panel-body">
-		    <div class="panel-group" id="category">
-			<div class="panel-body">
 			</div>
 		    </div>
 		</div>

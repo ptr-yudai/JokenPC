@@ -38,7 +38,7 @@ $jpc->navbar_active = 2;
 					<table class="table table-hover">
 					    <thead>
 						<tr>
-						    <th></th><th>問題</th><th>スコア</th><th>正解者数</th>
+						    <th></th><th class="col-md-6">問題</th><th>スコア</th><th>正解者数</th>
 						</tr>
 					    </thead>
 					    <tbody>

@@ -25,7 +25,7 @@
 			<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownAboutMe">
 			    <li role="presentation"><a role="menuitem" tabindex="-1" href="/user/">個人設定</a></li>
 			    <li role="presentation" class="divider"></li>
-			    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">ログアウト</a></li>
+			    <li role="presentation"><a role="menuitem" tabindex="-1" href="/login/logout.php">ログアウト</a></li>
 			</ul>
 		    <?php } else { ?>
 			<a href="/login/" class="navbar-link">ログイン</a>

@@ -44,10 +44,6 @@ class JPC_Auth
      */
     function logout()
     {
-	// 正常なログアウトポストをフィルタリング
-	if (empty($_POST['type'])) return;
-	if ($_POST['type'] !== "logout") return;
-	
 	// ログアウト
 	$_SESSION['login'] = false;
 	session_destroy();
@@ -184,6 +180,24 @@ class JPC_Auth
     }
 
     /*
+     * 全てのユーザー情報を取得する
+     */
+    function get_all_userinfo()
+    {
+	// データベースに接続できていない
+	if ($this->jpc->pdo === null) {
+	    $this->jpc->log('warning', "データベースに接続できません。", false);
+	    return;
+	}
+	
+	// ユーザー情報を確認
+	$query = $this->jpc->pdo->query('SELECT * FROM account;');
+	$this->users = $query->fetchAll(PDO::FETCH_ASSOC);
+	// ソート
+	array_multisort(array_column($this->users, 'score'), SORT_DESC, $this->users);
+    }
+
+    /*
      * ユーザー名を暗号化してbase64
      */
     function encrypt_username()
@@ -201,6 +215,29 @@ class JPC_Auth
     }
 
     /*
+     * 順位を表すアイコンのクラスを返す
+     */
+    function put_king($rank)
+    {
+	$class = ' class="glyphicon glyphicon-king"';
+	switch($rank) {
+	    case 0:
+		$class .= ' style="color: Gold;"';
+		break;
+	    case 1:
+		$class .= ' style="color: DarkGray;"';
+		break;
+	    case 2:
+		$class .= ' style="color: SaddleBrown;"';
+		break;
+	    default:
+		$class = '';
+		break;
+	}
+	return $class;
+    }
+
+    /*
      * コンストラクタ
      */
     function __construct($jpc)
@@ -209,6 +246,7 @@ class JPC_Auth
 	$this->enc_user = "";
 	$this->enc_iv = "";
 	$this->userinfo = array();
+	$this->users = array();
     }
 }
 ?>
