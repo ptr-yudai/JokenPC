@@ -30,10 +30,10 @@ $jpc->navbar_active = 2;
 		    <div class="panel-group" id="category">
 			<?php foreach($jpc->prob->problem_list as $category => $problems) { ?>
 			    <div class="panel panel-primary">
-				<a class="list-group-item active" data-toggle="collapse" data-parent="#category" href="#category-algorithm">
-				    <?php print($category); ?><span class="badge"><?php print(count($problems)); ?></span>
+				<a class="list-group-item active" data-toggle="collapse" data-parent="#category" href="#category-<?php print($jpc->h($category)); ?>">
+				    <?php print($jpc->h($category)); ?><span class="badge"><?php print(count($problems)); ?></span>
 				</a>
-				<div class="panel-collapse collapse" id="category-algorithm">
+				<div class="panel-collapse collapse" id="category-<?php print($jpc->h($category)); ?>">
 				    <div class="panel-body">
 					<table class="table table-hover">
 					    <thead>
