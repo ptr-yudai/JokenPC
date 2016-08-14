@@ -104,9 +104,9 @@ class JPC:
             self.output_data = self.run_command(username, self.record['output_code'])
             # 実行結果を取得
             result = self.run_command(username, './'+filepath_out)
-            print "Input : ", self.input_data
-            print "Answer : ", self.output_data
-            print "Result : ", result
+            #print "Input : ", self.input_data
+            #print "Answer : ", self.output_data
+            #print "Result : ", result
             # タイムアウト
             if result == False:
                 self.ws.send(json.dumps({'failure': n + 1}))
