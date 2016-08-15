@@ -47,7 +47,7 @@ class JPC:
         os.chdir('/tmp/')
         # ユーザーを作成する
         try:
-            os.system("useradd {0}".format(username))
+            os.system("useradd -M {0}".format(username))
             pwnam = pwd.getpwnam(username)
         except Exception:
             return
@@ -82,7 +82,7 @@ class JPC:
         except Exception:
             try:
                 os.remove(filepath_out)
-                os.system("userdel {0}".format(username))
+                os.system("userdel -r {0}".format(username))
             except Exception:
                 print("[ERROR] /tmp/{0}の削除に失敗しました。".format(filepath_out))
                 print("[ERROR] ユーザー{0}の削除に失敗しました。".format(username))
@@ -135,7 +135,7 @@ class JPC:
         # 実行ファイルを削除
         try:
             os.remove(filepath_out)
-            os.system("userdel {0}".format(username))
+            os.system("userdel -r {0}".format(username))
         except Exception:
             print("[ERROR] /tmp/{0}の削除に失敗しました。".format(filepath_out))
             print("[ERROR] ユーザー{0}の削除に失敗しました。".format(username))

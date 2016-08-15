@@ -1,4 +1,4 @@
-<?php 
+<?php
 require(dirname(__FILE__).'/jpc/init.php');
 $jpc = new JPC();
 /* ページ設定 */
