@@ -40,6 +40,21 @@ class JPC
     {
 	return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
     }
+
+    /*
+     * 時間確認
+     */
+    function in_session()
+    {
+	$now = new DateTime('now');
+	if ($now < $this->config->start_time) {
+	    return -1;
+	}
+	if ($now > $this->config->end_time) {
+	    return 1;
+	}
+	return 0;
+    }
     
     /*
      * 初期化

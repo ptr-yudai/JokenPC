@@ -1,9 +1,15 @@
 <?php 
 require(dirname(__FILE__).'/../jpc/init.php');
 $jpc = new JPC();
+/* まだ開始されていない */
+if ($jpc->in_session() === -1) {
+    header("Location: /");
+    exit();
+}
 /* ログイン済み */
 if ($jpc->auth->is_logged_in() === false) {
     header("Location: /login/");
+    exit();
 }
 /* 全問題を取得 */
 $jpc->prob->get_all_problems();

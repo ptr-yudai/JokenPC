@@ -15,8 +15,8 @@ class JPC_Config
 	// 開催場所(時刻)
 	$this->place = 'Asia/Tokyo';                     // タイムゾーン
 	date_default_timezone_set($this->place);      // ここは変更しない
-	$this->start_time = date('2016/06/30 12:00:00'); // 開始時刻
-	$this->end_time = date('2016/06/30 13:00:00');   // 終了時刻
+	$this->start_time = new DateTime('2016/08/15 19:00:00'); // 開始時刻
+	$this->end_time = new DateTime('2016/08/15 19:00:00');   // 終了時刻
 
 	/*
 	 * 公開設定

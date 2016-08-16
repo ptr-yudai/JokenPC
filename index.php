@@ -19,7 +19,24 @@ $jpc->navbar_active = 1;
 	    <div class="panel panel-default">
 		<div class="panel-heading">ようこそ</div>
 		<div class="panel-body">
-		    Joken Programming Contestへようこそ！
+		    <p>
+			Joken Programming Contestへようこそ！<br>
+			開始日時：<?php print($jpc->config->start_time->format('Y/m/d H:i:s')); ?><br>
+			終了日時：<?php print($jpc->config->end_time->format('Y/m/d H:i:s')); ?>
+			<?php
+			switch($jpc->in_session()) {
+			    case -1:
+				print("<br>まだ大会は開催していません。");
+				break;
+			    case 0:
+				print("<br>ただいま大会が開催されています。");
+				break;
+			    case 1:
+				print("<br>既に大会は終了しました。");
+				break;
+			}
+			?>
+		    </p>
 		</div>
 	    </div>
 	</div>
