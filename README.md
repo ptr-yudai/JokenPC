@@ -23,7 +23,7 @@ Python 2.7
 ここではlocalhostにjoken_proconを作成します。
 
 ```sql
-CREATE DATABASE joken_procon;
+CREATE DATABASE joken_procon DEFAULT CHARACTER SET utf8;
 ```
 
 また、データベースにアクセスできる権限を持ったユーザーを作成します。
@@ -49,7 +49,7 @@ CREATE TABLE account(
     score INT NOT NULL,
     solved TEXT NOT NULL,
     PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE problem(
     id INT NOT NULL AUTO_INCREMENT,
@@ -69,7 +69,7 @@ CREATE TABLE problem(
     solved_user TEXT NOT NULL,
     last_date DATETIME,
     PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 ```
 
 設定を/jpc/config.phpに記述します。
