@@ -45,6 +45,15 @@ $jpc->navbar_active = 2;
 		    <?php print($jpc->prob->info['problem']); ?>
 		</div>
 	    </div>
+	    <!-- Panel : 備考 -->
+	    <?php if ($jpc->prob->info['note'] !== '') { ?>
+		<div class="panel panel-default">
+		    <div class="panel-heading">備考</div>
+		    <div class="panel-body">
+			<?php print($jpc->prob->info['note']); ?>
+		    </div>
+		</div>
+	    <?php } ?>
 	    <!-- Panel : 入出力例 -->
 	    <div class="panel panel-default">
 		<div class="panel-heading">入出力例</div>
